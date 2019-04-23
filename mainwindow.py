@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets, QtCore
+from PyQt5 import QtCore, QtGui, QtWidgets
 from httpserver import app
 import multiprocessing
 import threading
@@ -48,14 +48,22 @@ class Ui_MainWindow(QtCore.QObject):
 
         self.signalUI.connect(self.setLabelText)
 
+        self.queue = multiprocessing.Queue(10)
+
         self.retranslateUi(MainWindow)
         self.closebtn.clicked.connect(self.closeServer)
         self.startbtn.clicked.connect(self.startServer)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.startbtn.setText(_translate("MainWindow", "startServer"))
+        self.closebtn.setText(_translate("MainWindow", "closeServer"))
+        self.label.setText(_translate("MainWindow", "TextLabel"))
+
     def startServer(self):
         self.isRuning = True
-        self.queue = multiprocessing.Queue(10)
         thread = threading.Thread(target=self.readQueue)
         thread.start()
         self.process = multiprocessing.Process(target=self.worker, args=(self.queue,))
@@ -81,12 +89,5 @@ class Ui_MainWindow(QtCore.QObject):
 
     def setLabelText(self, str):
         self.label.setText("{}\n{}".format(self.label.text(), str))
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.startbtn.setText(_translate("MainWindow", "startServer"))
-        self.closebtn.setText(_translate("MainWindow", "closeServer"))
-        self.label.setText(_translate("MainWindow", "TextLabel"))
 
 
