@@ -15,6 +15,8 @@ class Ui_MainWindow(QtCore.QObject):
 
     signalUI = QtCore.pyqtSignal(str)
 
+    isServerStarted = False
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(606, 402)
@@ -26,14 +28,25 @@ class Ui_MainWindow(QtCore.QObject):
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.startbtn = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        self.startbtn.setObjectName("startbtn")
-        self.horizontalLayout.addWidget(self.startbtn)
+        self.ipLabel = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.ipLabel.setObjectName("ipLabel")
+        self.horizontalLayout.addWidget(self.ipLabel)
+        self.ipLineEdit = QtWidgets.QLineEdit(self.horizontalLayoutWidget)
+        self.ipLineEdit.setEnabled(True)
+        self.ipLineEdit.setPlaceholderText("ip")
+        self.ipLineEdit.setObjectName("ipLineEdit")
+        self.horizontalLayout.addWidget(self.ipLineEdit)
+        self.portLabel = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.portLabel.setObjectName("portLabel")
+        self.horizontalLayout.addWidget(self.portLabel)
+        self.portLineEdit = QtWidgets.QLineEdit(self.horizontalLayoutWidget)
+        self.portLineEdit.setObjectName("portLineEdit")
+        self.horizontalLayout.addWidget(self.portLineEdit)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.closebtn = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        self.closebtn.setObjectName("closebtn")
-        self.horizontalLayout.addWidget(self.closebtn)
+        self.btn = QtWidgets.QPushButton(self.horizontalLayoutWidget)
+        self.btn.setObjectName("closebtn")
+        self.horizontalLayout.addWidget(self.btn)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(69, 95, 481, 121))
         self.label.setObjectName("label")
@@ -51,28 +64,34 @@ class Ui_MainWindow(QtCore.QObject):
         self.queue = multiprocessing.Queue(10)
 
         self.retranslateUi(MainWindow)
-        self.closebtn.clicked.connect(self.closeServer)
-        self.startbtn.clicked.connect(self.startServer)
+        self.btn.clicked.connect(self.onBtnClick)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.startbtn.setText(_translate("MainWindow", "startServer"))
-        self.closebtn.setText(_translate("MainWindow", "closeServer"))
+        self.btn.setText(_translate("MainWindow", "startServer"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
+        self.ipLabel.setText(_translate("MainWindow", "ip:"))
+        self.ipLineEdit.setText(_translate("MainWindow", "127.0.0.1"))
+        self.portLabel.setText(_translate("MainWindow", "port:"))
+        self.portLineEdit.setText(_translate("MainWindow", "5000"))
 
-    def startServer(self):
-        self.isRuning = True
-        thread = threading.Thread(target=self.readQueue)
-        thread.start()
-        self.process = multiprocessing.Process(target=self.worker, args=(self.queue,))
-        self.process.start()
-
-    def closeServer(self):
-        self.process.terminate()
-        self.isRuning = False
-        self.queue.put("quit queue.")
+    def onBtnClick(self):
+        _translate = QtCore.QCoreApplication.translate
+        if self.isServerStarted:
+            self.btn.setText(_translate("MainWindow", "startServer"))
+            self.process.terminate()
+            self.isRuning = False
+            self.queue.put("quit queue.")
+        else:
+            self.btn.setText(_translate("MainWindow", "closeServer"))
+            self.isRuning = True
+            thread = threading.Thread(target=self.readQueue)
+            thread.start()
+            self.process = multiprocessing.Process(target=self.worker, args=(self.queue,))
+            self.process.start()
+        self.isServerStarted = not self.isServerStarted
 
     def worker(self, q):
         app.queue = q
