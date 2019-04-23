@@ -3,6 +3,10 @@ app = Flask(__name__)
 
 app.queue = None
 
+@app.route('/', methods=['GET'])
+def index():
+    return "<h1>hello world!</h1>"
+
 @app.route('/ssrc', methods=['GET'])
 def get():
     if not app.queue.full():
