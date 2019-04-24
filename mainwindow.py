@@ -10,6 +10,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from httpserver import app
 import multiprocessing
 import threading
+import socket
+import re
 
 class Ui_MainWindow(QtCore.QObject):
 
@@ -73,29 +75,37 @@ class Ui_MainWindow(QtCore.QObject):
         self.btn.setText(_translate("MainWindow", "startServer"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
         self.ipLabel.setText(_translate("MainWindow", "ip:"))
-        self.ipLineEdit.setText(_translate("MainWindow", "127.0.0.1"))
+        addrs = self.getHostIp()
+        self.ipLineEdit.setText(_translate("MainWindow", addrs))
         self.portLabel.setText(_translate("MainWindow", "port:"))
         self.portLineEdit.setText(_translate("MainWindow", "5000"))
 
     def onBtnClick(self):
         _translate = QtCore.QCoreApplication.translate
         if self.isServerStarted:
-            self.btn.setText(_translate("MainWindow", "startServer"))
             self.process.terminate()
             self.isRuning = False
             self.queue.put("quit queue.")
+            self.btn.setText(_translate("MainWindow", "startServer"))
         else:
-            self.btn.setText(_translate("MainWindow", "closeServer"))
+            ip = self.ipLineEdit.text()
+            if not self.checkIp(ip):
+                print("ip is not match.")
+                return
+            port = self.portLineEdit.text()
+            if not port.isnumeric():
+                return
             self.isRuning = True
             thread = threading.Thread(target=self.readQueue)
             thread.start()
-            self.process = multiprocessing.Process(target=self.worker, args=(self.queue,))
+            self.process = multiprocessing.Process(target=self.worker, args=(self.queue, ip, port))
             self.process.start()
+            self.btn.setText(_translate("MainWindow", "closeServer"))
         self.isServerStarted = not self.isServerStarted
 
-    def worker(self, q):
+    def worker(self, q, host, port):
         app.queue = q
-        app.run(debug=False, threaded=True)
+        app.run(host=host, port=int(port), debug=False, threaded=True)
 
     def readQueue(self):
         while True:
@@ -109,4 +119,20 @@ class Ui_MainWindow(QtCore.QObject):
     def setLabelText(self, str):
         self.label.setText("{}\n{}".format(self.label.text(), str))
 
+    def checkIp(self, ipAddr):
+        compile_ip = re.compile(
+            '^(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|[1-9])\.(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|\d)\.(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|\d)\.(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|\d)$')
+        if compile_ip.match(ipAddr):
+            return True
+        else:
+            return False
+
+    def getHostIp(self):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(('8.8.8.8', 80))
+            ip = s.getsockname()[0]
+        finally:
+            s.close()
+        return ip
 
