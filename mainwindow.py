@@ -81,7 +81,6 @@ class Ui_MainWindow(QtCore.QObject):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.btn.setText(_translate("MainWindow", "startServer"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
         self.ipLabel.setText(_translate("MainWindow", "ip:"))
