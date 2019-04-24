@@ -7,11 +7,13 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 from httpserver import app
 import multiprocessing
 import threading
 import socket
 import re
+from qtfigure import QtFigure
 
 class Ui_MainWindow(QtCore.QObject):
 
@@ -24,6 +26,12 @@ class Ui_MainWindow(QtCore.QObject):
         MainWindow.resize(606, 402)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+        self.gridlayout = QtWidgets.QGridLayout(self.centralwidget)  # 继承容器groupBox
+        self.figure = QtFigure(width=3, height=2, dpi=100)
+        self.figure.plotSin()
+        self.gridlayout.addWidget(self.figure, 0, 1)
+
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(90, 10, 431, 41))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
@@ -34,7 +42,6 @@ class Ui_MainWindow(QtCore.QObject):
         self.ipLabel.setObjectName("ipLabel")
         self.horizontalLayout.addWidget(self.ipLabel)
         self.ipLineEdit = QtWidgets.QLineEdit(self.horizontalLayoutWidget)
-        self.ipLineEdit.setEnabled(True)
         self.ipLineEdit.setPlaceholderText("ip")
         self.ipLineEdit.setObjectName("ipLineEdit")
         self.horizontalLayout.addWidget(self.ipLineEdit)
@@ -43,15 +50,18 @@ class Ui_MainWindow(QtCore.QObject):
         self.horizontalLayout.addWidget(self.portLabel)
         self.portLineEdit = QtWidgets.QLineEdit(self.horizontalLayoutWidget)
         self.portLineEdit.setObjectName("portLineEdit")
+        self.portLineEdit.setEnabled(True)
         self.horizontalLayout.addWidget(self.portLineEdit)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.btn = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.btn.setObjectName("closebtn")
         self.horizontalLayout.addWidget(self.btn)
+
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(69, 95, 481, 121))
         self.label.setObjectName("label")
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 606, 22))
