@@ -14,18 +14,18 @@ class MyApplication(QApplication):
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
         self.title = "PyQt5 Window"
-        self.top = 10
-        self.left = 10
-        self.width = 400
-        self.height = 300
+        self.top = 0
+        self.left = 0
+        self.width = 600
+        self.height = 400
         self.iconName = "home.jpeg"
 
 
     def initWindow(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
+        self.setMinimumSize(self.width,self.height)
 
 
 

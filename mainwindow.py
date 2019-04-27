@@ -23,14 +23,14 @@ class Ui_MainWindow(QtCore.QObject):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(606, 402)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget = QtWidgets.QWidget()
         self.centralwidget.setObjectName("centralwidget")
+        MainWindow.setCentralWidget(self.centralwidget)
 
         self.gridlayout = QtWidgets.QGridLayout(self.centralwidget)  # 继承容器groupBox
         self.figure = QtFigure(width=3, height=2, dpi=100)
         self.figure.plotSin()
-        self.gridlayout.addWidget(self.figure, 0, 1)
+        self.gridlayout.addWidget(self.figure)
 
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(90, 10, 431, 41))
@@ -41,7 +41,7 @@ class Ui_MainWindow(QtCore.QObject):
         self.ipLabel = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.ipLabel.setObjectName("ipLabel")
         self.horizontalLayout.addWidget(self.ipLabel)
-        self.ipLineEdit = QtWidgets.QLineEdit(self.horizontalLayoutWidget)
+        self.ipLineEdit = QtWidgets.QLineEdit()
         self.ipLineEdit.setPlaceholderText("ip")
         self.ipLineEdit.setObjectName("ipLineEdit")
         self.horizontalLayout.addWidget(self.ipLineEdit, stretch=7)
@@ -58,22 +58,20 @@ class Ui_MainWindow(QtCore.QObject):
         self.btn.setObjectName("closebtn")
         self.horizontalLayout.addWidget(self.btn)
 
-        MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 606, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
+
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.signalUI.connect(self.setLabelText)
-
-        self.queue = multiprocessing.Queue(10)
-
         self.retranslateUi(MainWindow)
+
+        self.signalUI.connect(self.showMessage)
+        self.queue = multiprocessing.Queue(10)
         self.btn.clicked.connect(self.onBtnClick)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -83,6 +81,7 @@ class Ui_MainWindow(QtCore.QObject):
         self.ipLineEdit.setText(_translate("MainWindow", addrs))
         self.portLabel.setText(_translate("MainWindow", "port:"))
         self.portLineEdit.setText(_translate("MainWindow", "5000"))
+
 
     def onBtnClick(self):
         _translate = QtCore.QCoreApplication.translate
@@ -94,7 +93,7 @@ class Ui_MainWindow(QtCore.QObject):
         else:
             ip = self.ipLineEdit.text()
             if not self.checkIp(ip):
-                print("ip is not match.")
+                self.signalUI.emit("ip is not match.")
                 return
             port = self.portLineEdit.text()
             if not port.isnumeric():
@@ -107,9 +106,11 @@ class Ui_MainWindow(QtCore.QObject):
             self.btn.setText(_translate("MainWindow", "closeServer"))
         self.isServerStarted = not self.isServerStarted
 
+
     def worker(self, q, host, port):
         app.queue = q
         app.run(host=host, port=int(port), debug=False, threaded=True)
+
 
     def readQueue(self):
         while True:
@@ -120,7 +121,8 @@ class Ui_MainWindow(QtCore.QObject):
             else:
                 break
 
-    def setLabelText(self, str):
+
+    def showMessage(self, str):
         self.statusbar.showMessage(str)
 
 
@@ -131,6 +133,7 @@ class Ui_MainWindow(QtCore.QObject):
             return True
         else:
             return False
+
 
     def getHostIp(self):
         try:
