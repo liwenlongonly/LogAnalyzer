@@ -58,10 +58,6 @@ class Ui_MainWindow(QtCore.QObject):
         self.btn.setObjectName("closebtn")
         self.horizontalLayout.addWidget(self.btn)
 
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(69, 95, 481, 121))
-        self.label.setObjectName("label")
-
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 606, 22))
@@ -82,7 +78,6 @@ class Ui_MainWindow(QtCore.QObject):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         self.btn.setText(_translate("MainWindow", "startServer"))
-        self.label.setText(_translate("MainWindow", "TextLabel"))
         self.ipLabel.setText(_translate("MainWindow", "ip:"))
         addrs = self.getHostIp()
         self.ipLineEdit.setText(_translate("MainWindow", addrs))
@@ -126,7 +121,8 @@ class Ui_MainWindow(QtCore.QObject):
                 break
 
     def setLabelText(self, str):
-        self.label.setText("{}\n{}".format(self.label.text(), str))
+        self.statusbar.showMessage(str)
+
 
     def checkIp(self, ipAddr):
         compile_ip = re.compile(
