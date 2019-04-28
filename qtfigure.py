@@ -1,10 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import numpy as np
 import matplotlib
-from mpl_toolkits.mplot3d import axes3d
 matplotlib.use("Qt5Agg")  # 声明使用QT5
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
 class QtFigure(FigureCanvas):
@@ -21,13 +19,13 @@ class QtFigure(FigureCanvas):
 
     def plotSin(self):
         self.axes.grid(True, linestyle='--')
-        self.h, = self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
+        self.h, = self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], color='r', linewidth=0.5)
 
     def update_figure(self):
         # 构建4个随机整数，位于闭区间[0, 10]
         self.axes.cla()
         l = [np.random.randint(0, 10) for i in range(4)]
         self.axes.grid(True, linestyle='--')
-        self.axes.plot([0, 1, 2, 3], l, 'r')
+        self.axes.plot([0, 1, 2, 3], l, color='r', linewidth=0.5)
         # self.h.set_ydata(l)
         self.draw()
