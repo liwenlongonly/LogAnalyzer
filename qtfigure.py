@@ -20,14 +20,14 @@ class QtFigure(FigureCanvas):
         self.timer.start(1000)
 
     def plotSin(self):
-        self.axes.grid(True)
+        self.axes.grid(True, linestyle='--')
         self.h, = self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
 
     def update_figure(self):
         # 构建4个随机整数，位于闭区间[0, 10]
         self.axes.cla()
         l = [np.random.randint(0, 10) for i in range(4)]
-        self.axes.grid(True)
+        self.axes.grid(True, linestyle='--')
         self.axes.plot([0, 1, 2, 3], l, 'r')
         # self.h.set_ydata(l)
         self.draw()
