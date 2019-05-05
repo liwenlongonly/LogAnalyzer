@@ -109,6 +109,7 @@ class Ui_MainWindow(QtCore.QObject):
 
     def worker(self, q, host, port):
         app.queue = q
+        # ssl_context = ("cert/cert.pem", "cert/key.pem")
         app.run(host=host, port=int(port), debug=False, threaded=True)
 
 
