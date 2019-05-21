@@ -42,7 +42,8 @@ class QtFigure(FigureCanvas):
         self.axes.set_title('axes title')
         self.axes.set_xlabel('x=')
         self.axes.set_ylabel('y=')
-        self.axes.set_xticks(np.linspace(-1, 10, 2))
+        self.axes.set_xticks(np.linspace(-1, 5, 5))
+        self.axes.set_yticks(np.linspace(0, 10, 10))
         self.draw()
 
     @staticmethod
